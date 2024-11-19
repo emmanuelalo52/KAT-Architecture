@@ -6,15 +6,15 @@ This repository implements a novel approach to image classification by integrati
 
 ### Kolmogorov–Arnold Transformer (KAT)
 KAT replaces the Multi-Layer Perceptron (MLP) layers in transformers with **Kolmogorov–Arnold Networks (KAN)**. The KANs leverage learnable activation functions (e.g., rational functions) to enhance the model's expressiveness while maintaining computational efficiency. KAT introduces the **Group Rational KAN (GRKAN)** to address the limitations of original KAN designs, such as:
-1. **Inefficient Base Functions**: KANs traditionally use B-splines, which are not GPU-friendly.
-2. **Scalability Issues**: Unique activation functions for each input-output pair lead to excessive parameters and computations.
-3. **Poor Initialization**: Default initialization strategies for KANs fail to preserve variance, resulting in unstable training.
+1. **Inefficient Base Functions**: A B-spline is the joint of polynomaial curves at a knot. The smoothness of this joint is determined by the degree of the polynomials. Hence, because this requires an amount of recursion, it bloats the GPU making it slow.
+2. **Scalability Issues**: Because of B-splines it requires unique activation functions for each input-output pair lead to excessive parameters and computations, thus, accumulating too much computational memory.
+3. **Poor Initialization**: Weight initialization strategies for KANs fail to preserve variance, resulting in unstable training.
 
-### Our Implementation
+### Solution
 This repository integrates GRKAN into the Vision Transformer (ViT) architecture to enhance its channel mixing capabilities. The key contributions are:
-- Replacing MLP layers in ViT with GRKAN layers.
-- Leveraging rational functions as the activation base for GRKAN.
-- Preserving the original transformer attention mechanism while enhancing expressiveness.
+- **Rational Basis Activation/Function**: This is the ratio of 2 polynomials of different degrees. This techniques eases the GPU on computations.
+- **Replacing MLP with GRKAN**: Grouped Rational KAN involves creating groups of input channels and sharing a rational basis function across all the groups.
+- **VAriance preserving initialization**: The Rational function coefficients are initialized to the corresponding activation function of the outputs.
 
 ## Features
 - Fully functional **Vision Transformer (ViT)** with GRKAN for channel mixing.
