@@ -1,4 +1,4 @@
-# Vision Transformer with Group Rational KAN (GRKAN)
+# KAT Architecture
 
 This repository implements a novel approach to image classification by integrating **Kolmogorov–Arnold Networks (KAN)** into the **Vision Transformer (ViT)** architecture. The implementation is inspired by the research paper *"Kolmogorov–Arnold Transformer (KAT)"*, which proposed replacing traditional MLP layers in transformers with more expressive and computationally efficient KAN layers.
 
