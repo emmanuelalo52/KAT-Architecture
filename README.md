@@ -4,7 +4,7 @@ This repository implements a Vision Transformer (ViT) variant that incorporates 
 
 ## Technical Background and Architecture Details
 
-### The Problem: Attention Mechanism Limitations
+### The Problem: Kolmogrov-Arnold Network Limitations
 
 Traditional KAN face several key challenges:
 
