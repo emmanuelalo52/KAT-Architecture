@@ -39,7 +39,6 @@ class SelfAttention(nn.Module):
         assert config.n_emb % config.n_heads == 0
         self.n_head = config.n_heads
         self.n_emb = config.n_emb
-        self.n_emb = config.n_emb
         self.proj = nn.Linear(config.n_emb,config.n_emb)
         self.scale = config.n_emb ** -0.5
         self.c_attn = nn.Linear(config.n_emb, 3 * config.n_emb)
