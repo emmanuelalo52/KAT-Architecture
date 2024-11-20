@@ -59,26 +59,31 @@ class SelfAttention(nn.Module):
 
 #rational function
 class RationalFunction(nn.Module):
-    def __init__(self,m,n):
+    def __init__(self, numerator_order, denominator_order):
         super().__init__()
-        self.a = nn.Parameter(torch.randn(m+1))
-        self.b = nn.Parameter(torch.randn(n+1))
+        self.numerator_order = numerator_order
+        self.denominator_order = denominator_order
 
-        #keep all numbers uniform and realistic
-        self.m = nn.init.xavier_uniform_(self.a)
-        self.n = nn.init.xavier_uniform_(self.b)
-    def forward(self,x):
-        p_x = self.a[self.m]
-        for i in range(self.m -1,-1,-1):
-            p_x = p_x * x + self.a[i]
-        # p_x = sum([self.a[i] * x ** i for i in range(len(self.a))])
-        # q_x = 1+torch.abs(sum([self.b[j] * x ** j for j in range(len(self.b))]))
-        q_x = self.b[self.n]
-        for i in range(self.n,-1,-1,-1):
-            q_x = q_x * x + self.b[i]
-        q_x = 1+torch.abs(q_x)
-        output = p_x/q_x
-        return output
+        # Learnable coefficients initialized randomly
+        self.a = nn.Parameter(torch.randn(1, numerator_order + 1))  # (1, numerator_order + 1)
+        self.b = nn.Parameter(torch.randn(1, denominator_order + 1))  # (1, denominator_order + 1)
+    
+    def forward(self, x):
+        # Expand dimensions for broadcasting if necessary
+        B, N, D = x.shape
+        x_exp = x.unsqueeze(-1)  # (B, N, D, 1)
+
+        # Polynomial evaluation for numerator and denominator
+        numerator = torch.sum(self.a * x_exp**torch.arange(self.numerator_order + 1, device=x.device), dim=-1)  # (B, N, D)
+        denominator = torch.sum(self.b * x_exp**torch.arange(self.denominator_order + 1, device=x.device), dim=-1)  # (B, N, D)
+
+        # Avoid division by zero in the denominator
+        denominator = torch.where(denominator == 0, torch.tensor(1.0, device=x.device), denominator)
+
+        # Compute the rational function
+        y = numerator / denominator
+        return y
+
 
 #GRKAN architecture
 class GRKAN(nn.Module):
