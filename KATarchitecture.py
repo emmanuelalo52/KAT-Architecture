@@ -43,12 +43,12 @@ class SelfAttention(nn.Module):
         self.proj = nn.Linear(config.n_emb,config.n_emb)
         self.scale = config.n_emb ** -0.5
         self.c_attn = nn.Linear(config.n_emb, 3 * config.n_emb)
-        
+        self.qkv = nn.Linear(config.n_emb, 3 * config.n_emb)
     def forward(self,x):
         B, N, C = x.size() # batch size, sequence length, embedding dimensionality (n_emb   )
         # calculate query, key, values for all heads in batch and move head forward to be the batch dim
         # nh is "number of heads", hs is "head size", and C (number of channels) = nh * hs
-        qkv = self.qkv(x).reshape(B, N, 3, self.n_heads, C // self.n_heads).permute(2, 0, 3, 1, 4)
+        qkv = self.qkv(x).reshape(B, N, 3, self.n_head, C // self.n_head).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]
 
         attn = (q @ k.transpose(-2, -1)) * self.scale
@@ -156,7 +156,7 @@ class PatchEmbedding(nn.Module):
         self.ln = nn.LayerNorm(config.n_emb)
     def forward(self,x):
         x = self.ln_proj(x) # (B, embed_dim, H//patch_size, W//patch_size)
-        B, C, H, W = x.size 
+        # B, C, H, W = x.size 
         x = self.flatten(x) # (B, embed_dim, H*W//patch_size^2)
         x = x.transpose(1,2) # (B, H*W//patch_size^2, embed_dim)
         x = self.ln(x)
